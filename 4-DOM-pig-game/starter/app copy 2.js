@@ -49,54 +49,62 @@ document.querySelector(".btn-roll").addEventListener("click", btn);
 // anonymous function is when you declare the function directly
 // note that you won't be able to re-use it elsewhere afterwards
 document.querySelector(".btn-roll").addEventListener("click", function() {
-  if (gamePlaying) {
+  if(gamePlaying){
+
     // 1. Random number
     var dice = Math.floor(Math.random() * 6) + 1;
-
+    
     // 2. Display result
     // store in object, thats an expensive operation
     var diceDOM = document.querySelector(".dice");
     diceDOM.style.display = "block";
     diceDOM.src = "dice-" + dice + ".png";
-
+    
     // 3. Update the round score IF the rolled number was NOT 1
     if (dice !== 1) {
       // Add score
       roundScore += dice;
-      document.querySelector(
-        "#current-" + activePlayer
-      ).textContent = roundScore;
+      document.querySelector("#current-" + activePlayer).textContent = roundScore;
     } else {
-      nextPlayer();
+      // Next player
+      activePlayer = activePlayer === 0 ? 1 : 0;
+      // Reset scores and display
+      roundScore = 0;
+      document.getElementById("current-0").textContent = "0";
+      document.getElementById("current-1").textContent = "0";
+      // Change the current player indication
+      // First try out and see the add and remove from the class list
+      // document.querySelector('.player-0-panel').classList.remove('active');
+      // document.querySelector('.player-1-panel').classList.add('active');
+      document.querySelector(".player-0-panel").classList.toggle("active");
+      document.querySelector(".player-1-panel").classList.toggle("active");
+      // remove dice again
+      document.querySelector(".dice").style.display = "none";
     }
   }
 });
 
 document.querySelector(".btn-hold").addEventListener("click", function() {
-  if (gamePlaying) {
-    // Add CURRENT score to GLOBAL score
-    scores[activePlayer] += roundScore;
+  // Add CURRENT score to GLOBAL score
+  scores[activePlayer] += roundScore;
 
-    // Update the UI
-    document.getElementById("score-" + activePlayer).textContent =
-      scores[activePlayer];
+  // Update the UI
+  document.getElementById("score-" + activePlayer).textContent =
+    scores[activePlayer];
 
-    // Check if player won the game
-    if (scores[activePlayer] >= 100) {
-      document.getElementById("name-" + activePlayer).textContent = "Winner!";
-      document.querySelector(".dice").style.display = "none";
-      document
-        .querySelector(".player-" + activePlayer + "-panel")
-        .classList.add("winner");
-      document
-        .querySelector(".player-" + activePlayer + "-panel")
-        .classList.remove("active");
-      // Not playing the game anymore, there is a winner
-      gamePlaying = false;
-    } else {
-      // Next player!
-      nextPlayer();
-    }
+  // Check if player won the game
+  if (scores[activePlayer] >= 10) {
+    document.getElementById("name-" + activePlayer).textContent = "Winner!";
+    document.querySelector(".dice").style.display = "none";
+    document
+      .querySelector(".player-" + activePlayer + "-panel")
+      .classList.add("winner");
+    document
+      .querySelector(".player-" + activePlayer + "-panel")
+      .classList.remove("active");
+  } else {
+    // Next player!
+    nextPlayer();
   }
 });
 // Its best practice to have your css classes made
@@ -120,7 +128,7 @@ function init() {
   roundScore = 0;
   activePlayer = 0;
 
-  gamePlaying = true;
+  gamePlaying=true;
 
   // remove the dice
   document.querySelector(".dice").style.display = "none";
